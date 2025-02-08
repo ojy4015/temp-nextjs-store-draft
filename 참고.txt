@@ -1,0 +1,3 @@
+https://github.com/john-smilga/react-course-v3/17-starter-store 을 기본으로 수정개발함.
+강사 : john-smilga
+수정 : 오지형
