@@ -11,12 +11,14 @@ export enum Mode {
   CartItem = 'cartItem',
 }
 
+// rendering in different two places
 type SelectProductAmountProps = {
   mode: Mode.SingleProduct;
   amount: number;
   setAmount: (value: number) => void;
 };
 
+// async
 type SelectCartItemAmountProps = {
   mode: Mode.CartItem;
   amount: number;
@@ -29,11 +31,12 @@ function SelectProductAmount(
 ) {
   const { mode, amount, setAmount } = props;
 
+  // cartItem is either true or false
   const cartItem = mode === Mode.CartItem;
 
   return (
     <>
-      <h4 className='mb-2'>Amount : </h4>
+      <h4 className="mb-2">Amount : </h4>
       <Select
         defaultValue={amount.toString()}
         onValueChange={(value) => setAmount(Number(value))}

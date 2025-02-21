@@ -9,8 +9,11 @@ import {
   reviewSchema,
   validateWithZodSchema,
 } from './schemas';
-import { deleteImage, uploadImage } from './supabase';
+// import { deleteImage, uploadImage } from './supabase';
 import { revalidatePath } from 'next/cache';
+import { log } from 'console';
+import { deleteImage, uploadImage } from './supabase';
+import { Cart } from '@prisma/client';
 // import { Cart } from '@prisma/client';
 const getAuthUser = async () => {
   const user = await currentUser();
@@ -40,7 +43,7 @@ export const fetchFeaturedProducts = async () => {
   return products;
 };
 
-export const fetchAllProducts = ({ search = '' }: { search: string }) => {
+export const fetchAllProducts = async ({ search = '' }: { search: string }) => {
   return db.product.findMany({
     where: {
       OR: [
@@ -80,10 +83,57 @@ export const createProductAction = async (
 ): Promise<{ message: string }> => {
   const user = await getAuthUser();
   try {
+    // manual way
+    // const name = formData.get('name') as string;
+    // const company = formData.get('company') as string;
+    // const price = Number(formData.get('price') as string);
+    // // temp
+    // const image = formData.get('image') as File;
+    // const description = formData.get('description') as string;
+    // const featured = Boolean(formData.get('featured') as string);
+
     const rawData = Object.fromEntries(formData);
     const file = formData.get('image') as File;
+    // console.log('rawData : ', rawData);
+    // const validatedFields = productSchema.safeParse(rawData);
     const validatedFields = validateWithZodSchema(productSchema, rawData);
     const validatedFile = validateWithZodSchema(imageSchema, { image: file });
+
+    // if (!validatedFields.success) {
+    //   const errors = validatedFields.error.errors.map((error) => error.message);
+    //   console.log('errors : ', errors);
+    //   throw new Error(errors.join(','));
+    // }
+
+    // rawData :  {
+    //   name: 'Recycled Plastic Pants',
+    //   company: 'Crist - Baumbach',
+    //   price: '100',
+    //   image: File {
+    //     size: 261826,
+    //     type: 'image/jpeg',
+    //     name: 'cabin-1.jpg',
+    //     lastModified: 1739329992084
+    //   },
+    //   description: 'Tabernus ager ullam veritas pax vaco. Inflammatio velum conicio conor testimonium maxime distinctio decet. Hic clibanus texo decumbo bene ustulo vitium creator temporibus vigor. Uterque defluo cruentus velociter calco studio aeternus vorax. Defungo conforto acidus adicio circumvenio angulus clam suspendo coerceo. Creta tumultus debeo curso suffragium eius cohaero carmen conqueror. Ante molestias summisse aestus voluptatum tabella vulgo custodia. Voco curvo contra delego tantum deduco arguo tergeo. Adulatio adicio aut caecus atrocitas color. Aestivus vesper demulceo capio absum. Harum spargo crastinus beneficium a.',
+    //   featured: 'on'
+    // }
+    // await db.product.create({
+    //   data: {
+    //     name,
+    //     company,
+    //     price,
+    //     image: '/images/product-1.jpg',
+    //     description,
+    //     featured,
+    //     clerkId: user.id,
+    //   },
+    // });
+
+    // const rawData = Object.fromEntries(formData);
+    // const file = formData.get('image') as File;
+    // const validatedFields = validateWithZodSchema(productSchema, rawData);
+    // const validatedFile = validateWithZodSchema(imageSchema, { image: file });
     const fullPath = await uploadImage(validatedFile.image);
 
     await db.product.create({
@@ -93,11 +143,38 @@ export const createProductAction = async (
         clerkId: user.id,
       },
     });
+    // return { message: 'product created' };
   } catch (error) {
     return renderError(error);
+    // return { message: 'there was an error...' };
   }
   redirect('/admin/products');
 };
+
+// export const createProductAction = async (
+//   prevState: any,
+//   formData: FormData
+// ): Promise<{ message: string }> => {
+//   const user = await getAuthUser();
+//   try {
+//     const rawData = Object.fromEntries(formData);
+//     const file = formData.get('image') as File;
+//     const validatedFields = validateWithZodSchema(productSchema, rawData);
+//     const validatedFile = validateWithZodSchema(imageSchema, { image: file });
+//     const fullPath = await uploadImage(validatedFile.image);
+
+//     await db.product.create({
+//       data: {
+//         ...validatedFields,
+//         image: fullPath,
+//         clerkId: user.id,
+//       },
+//     });
+//   } catch (error) {
+//     return renderError(error);
+//   }
+//   redirect('/admin/products');
+// };
 
 export const fetchAdminProducts = async () => {
   await getAdminUser();
@@ -161,6 +238,7 @@ export const updateProductAction = async (
     return renderError(error);
   }
 };
+
 export const updateProductImageAction = async (
   prevState: any,
   formData: FormData
@@ -278,6 +356,7 @@ export const fetchProductReviews = async (productId: string) => {
   });
   return reviews;
 };
+
 export const fetchProductRating = async (productId: string) => {
   const result = await db.review.groupBy({
     by: ['productId'],
@@ -315,6 +394,7 @@ export const fetchProductReviewsByUser = async () => {
   });
   return reviews;
 };
+
 export const deleteReviewAction = async (prevState: { reviewId: string }) => {
   const { reviewId } = prevState;
   const user = await getAuthUser();
@@ -331,6 +411,7 @@ export const deleteReviewAction = async (prevState: { reviewId: string }) => {
     return renderError(error);
   }
 };
+
 export const findExistingReview = async (userId: string, productId: string) => {
   return db.review.findFirst({
     where: {
@@ -341,7 +422,7 @@ export const findExistingReview = async (userId: string, productId: string) => {
 };
 
 export const fetchCartItems = async () => {
-  const { userId } = auth();
+  const { userId } = await auth();
   const cart = await db.cart.findFirst({
     where: {
       clerkId: userId ?? '',
@@ -482,6 +563,7 @@ export const addToCartAction = async (prevState: any, formData: FormData) => {
     return renderError(error);
   }
   redirect('/cart');
+  // return { message: 'product added to the cart' };
 };
 
 export const removeCartItemAction = async (
@@ -542,22 +624,15 @@ export const updateCartItemAction = async ({
 
 export const createOrderAction = async (prevState: any, formData: FormData) => {
   const user = await getAuthUser();
-  let orderId: null | string = null;
-  let cartId: null | string = null;
+  // let orderId: null | string = null;
+  // let cartId: null | string = null;
 
   try {
     const cart = await fetchOrCreateCart({
       userId: user.id,
       errorOnFailure: true,
     });
-    cartId = cart.id;
-
-    await db.order.deleteMany({
-      where: {
-        clerkId: user.id,
-        isPaid: false,
-      },
-    });
+    // cartId = cart.id;
 
     const order = await db.order.create({
       data: {
@@ -569,12 +644,64 @@ export const createOrderAction = async (prevState: any, formData: FormData) => {
         email: user.emailAddresses[0].emailAddress,
       },
     });
-    orderId = order.id;
+
+    // remove the cart once we know that the payment was successful
+    await db.cart.delete({
+      where: {
+        id: cart.id,
+      },
+    });
+
+    // await db.order.deleteMany({
+    //   where: {
+    //     clerkId: user.id,
+    //     isPaid: false,
+    //   },
+    // });
+
+    // orderId = order.id;
   } catch (error) {
     return renderError(error);
   }
-  redirect(`/checkout?orderId=${orderId}&cartId=${cartId}`);
+  redirect('/orders');
+  // redirect(`/checkout?orderId=${orderId}&cartId=${cartId}`);
 };
+
+// export const createOrderAction = async (prevState: any, formData: FormData) => {
+//   const user = await getAuthUser();
+//   let orderId: null | string = null;
+//   let cartId: null | string = null;
+
+//   try {
+//     const cart = await fetchOrCreateCart({
+//       userId: user.id,
+//       errorOnFailure: true,
+//     });
+//     cartId = cart.id;
+
+//     await db.order.deleteMany({
+//       where: {
+//         clerkId: user.id,
+//         isPaid: false,
+//       },
+//     });
+
+//     const order = await db.order.create({
+//       data: {
+//         clerkId: user.id,
+//         products: cart.numItemsInCart,
+//         orderTotal: cart.orderTotal,
+//         tax: cart.tax,
+//         shipping: cart.shipping,
+//         email: user.emailAddresses[0].emailAddress,
+//       },
+//     });
+//     orderId = order.id;
+//   } catch (error) {
+//     return renderError(error);
+//   }
+//   redirect(`/checkout?orderId=${orderId}&cartId=${cartId}`);
+// };
 
 export const fetchUserOrders = async () => {
   const user = await getAuthUser();
@@ -603,3 +730,21 @@ export const fetchAdminOrders = async () => {
   });
   return orders;
 };
+
+// rawData ======> : {
+//   image: File {
+//     size: 35199,
+//     type: 'image/jpeg',
+//     name: '0-user-susan.jpg',
+//     lastModified: 1739355363473
+//   }
+// }
+
+// rawData ======> : {
+//   profileImage: File {
+//     size: 35199,
+//     type: 'image/jpeg',
+//     name: '0-user-susan.jpg',
+//     lastModified: 1739355485857
+//   }
+// }

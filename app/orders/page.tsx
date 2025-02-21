@@ -17,7 +17,7 @@ async function OrdersPage() {
 
   return (
     <>
-      <SectionTitle text='Your Orders' />
+      <SectionTitle text="Your Orders" />
       <Table>
         <TableCaption>Total Orders : {orders.length}</TableCaption>
         <TableHeader>

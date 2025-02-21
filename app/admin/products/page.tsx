@@ -1,3 +1,4 @@
+// display all of products
 import EmptyList from '@/components/global/EmptyList';
 import { deleteProductAction, fetchAdminProducts } from '@/utils/actions';
 import Link from 'next/link';
@@ -22,7 +23,7 @@ async function AdminProductsPage() {
   return (
     <section>
       <Table>
-        <TableCaption className='capitalize'>
+        <TableCaption className="capitalize">
           total products : {items.length}
         </TableCaption>
         <TableHeader>
@@ -41,16 +42,16 @@ async function AdminProductsPage() {
                 <TableCell>
                   <Link
                     href={`/products/${productId}`}
-                    className='underline text-muted-foreground tracking-wide capitalize'
+                    className="underline text-muted-foreground tracking-wide capitalize"
                   >
                     {name}
                   </Link>
                 </TableCell>
                 <TableCell>{company}</TableCell>
                 <TableCell>{formatCurrency(price)}</TableCell>
-                <TableCell className='flex items-center gap-x-2'>
+                <TableCell className="flex items-center gap-x-2">
                   <Link href={`/admin/products/${productId}/edit`}>
-                    <IconButton actionType='edit' />
+                    <IconButton actionType="edit" />
                   </Link>
                   <DeleteProduct productId={productId} />
                 </TableCell>
@@ -67,9 +68,14 @@ function DeleteProduct({ productId }: { productId: string }) {
   const deleteProduct = deleteProductAction.bind(null, { productId });
   return (
     <FormContainer action={deleteProduct}>
-      <IconButton actionType='delete' />
+      <IconButton actionType="delete" />
     </FormContainer>
   );
 }
 
 export default AdminProductsPage;
+
+// const page = () => {
+//   return <div>admin mhy productspage</div>;
+// };
+// export default page;

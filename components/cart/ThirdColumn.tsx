@@ -5,7 +5,7 @@ import { Mode } from '../single-product/SelectProductAmount';
 import FormContainer from '../form/FormContainer';
 import { SubmitButton } from '../form/Buttons';
 import { removeCartItemAction, updateCartItemAction } from '@/utils/actions';
-import { useToast } from '../ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 function ThirdColumn({ quantity, id }: { quantity: number; id: string }) {
   const [amount, setAmount] = useState(quantity);
@@ -25,7 +25,7 @@ function ThirdColumn({ quantity, id }: { quantity: number; id: string }) {
   };
 
   return (
-    <div className='md:ml-8'>
+    <div className="md:ml-8">
       <SelectProductAmount
         amount={amount}
         setAmount={handleAmountChange}
@@ -33,8 +33,8 @@ function ThirdColumn({ quantity, id }: { quantity: number; id: string }) {
         isLoading={false}
       />
       <FormContainer action={removeCartItemAction}>
-        <input type='hidden' name='id' value={id} />
-        <SubmitButton size='sm' className='mt-4' text='remove' />
+        <input type="hidden" name="id" value={id} />
+        <SubmitButton size="sm" className="mt-4" text="remove" />
       </FormContainer>
     </div>
   );

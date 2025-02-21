@@ -1,3 +1,4 @@
+// admin edits product
 import {
   fetchAdminProductDetails,
   updateProductAction,
@@ -17,45 +18,50 @@ async function EditProductPage({ params }: { params: { id: string } }) {
   const { name, company, description, featured, price } = product;
   return (
     <section>
-      <h1 className='text-2xl font-semibold mb-8 capitalize'>update product</h1>
-      <div className='border p-8 rounded'>
+      <h1 className="text-2xl font-semibold mb-8 capitalize">update product</h1>
+      <div className="border p-8 rounded">
         <ImageInputContainer
           action={updateProductImageAction}
           name={name}
           image={product.image}
-          text='update image'
+          text="update image"
         >
-          <input type='hidden' name='id' value={id} />
-          <input type='hidden' name='url' value={product.image} />
+          <input type="hidden" name="id" value={id} />
+          <input type="hidden" name="url" value={product.image} />
         </ImageInputContainer>
         <FormContainer action={updateProductAction}>
-          <div className='grid gap-4 md:grid-cols-2 my-4'>
-            <input type='hidden' name='id' value={id} />
+          <div className="grid gap-4 md:grid-cols-2 my-4">
+            <input type="hidden" name="id" value={id} />
             <FormInput
-              type='text'
-              name='name'
-              label='product name'
+              type="text"
+              name="name"
+              label="product name"
               defaultValue={name}
             />
-            <FormInput type='text' name='company' defaultValue={company} />
+            <FormInput type="text" name="company" defaultValue={company} />
             <PriceInput defaultValue={price} />
           </div>
           <TextAreaInput
-            name='description'
-            labelText='product description'
+            name="description"
+            labelText="product description"
             defaultValue={description}
           />
-          <div className='mt-6'>
+          <div className="mt-6">
             <CheckboxInput
-              name='featured'
-              label='featured'
+              name="featured"
+              label="featured"
               defaultChecked={featured}
             />
           </div>
-          <SubmitButton text='update product' className='mt-8' />
+          <SubmitButton text="update product" className="mt-8" />
         </FormContainer>
       </div>
     </section>
   );
 }
 export default EditProductPage;
+
+// const page = () => {
+//   return <div>admin edit page</div>;
+// };
+// export default page;

@@ -47,3 +47,12 @@ async function SalesPage() {
   );
 }
 export default SalesPage;
+
+// const page = () => {
+//   return (
+//     <div>
+//       <div>AdminSalespage</div>
+//     </div>
+//   );
+// };
+// export default page;

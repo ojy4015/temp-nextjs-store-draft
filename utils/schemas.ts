@@ -1,5 +1,13 @@
 import { z, ZodSchema } from 'zod';
 
+// export const productSchema = z.object({
+//   name: z.string().min(4),
+//   company: z.string(),
+//   featured: z.coerce.boolean(),
+//   price: z.coerce.number().int().min(0),
+//   description: z.string(),
+// });
+
 export const productSchema = z.object({
   name: z
     .string()
@@ -24,12 +32,13 @@ export const productSchema = z.object({
     }
   ),
 });
+
 export const imageSchema = z.object({
   image: validateImageFile(),
 });
 
 function validateImageFile() {
-  const maxUploadSize = 1024 * 1024;
+  const maxUploadSize = 1024 * 1024; //1MB
   const acceptedFileTypes = ['image/'];
   return z
     .instanceof(File)
